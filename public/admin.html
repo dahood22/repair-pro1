@@ -2,30 +2,25 @@
 <html dir="rtl">
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
+<title>لوحة الإدارة</title>
 </head>
 <body>
 
-<h2>لوحة الإدارة</h2>
+<h2>إضافة جهاز</h2>
 
-<div class="box">
-<input id="name" placeholder="اسم الزبون">
-<input id="phone" placeholder="الهاتف">
-<input id="device" placeholder="الجهاز">
-<input id="issue" placeholder="العطل">
+<input id="name" placeholder="اسم الزبون"><br>
+<input id="phone" placeholder="رقم الهاتف"><br>
+<input id="device" placeholder="نوع الجهاز"><br>
+<input id="issue" placeholder="العطل"><br>
 
 <button onclick="add()">إضافة</button>
-</div>
 
-<div class="box">
+<h2>تحديث حالة</h2>
 <input id="tid" placeholder="رقم التتبع">
 <input id="status" placeholder="الحالة">
 <input id="price" placeholder="السعر">
 
 <button onclick="update()">تحديث</button>
-</div>
-
-<div id="qr"></div>
 
 <script>
 const password = "123456";
@@ -46,12 +41,7 @@ async function add() {
   });
 
   const data = await res.json();
-
-  document.getElementById("qr").innerHTML = `
-    <p>الرابط:</p>
-    <a href="${data.link}" target="_blank">${data.link}</a>
-    <br><img src="${data.qr}" width="150">
-  `;
+  alert("رابط الزبون:\n" + data.link);
 }
 
 async function update() {
