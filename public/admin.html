@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>لوحة الإدارة</h2>
+
+<div class="box">
+<input id="name" placeholder="اسم الزبون">
+<input id="phone" placeholder="الهاتف">
+<input id="device" placeholder="الجهاز">
+<input id="issue" placeholder="العطل">
+
+<button onclick="add()">إضافة</button>
+</div>
+
+<div class="box">
+<input id="tid" placeholder="رقم التتبع">
+<input id="status" placeholder="الحالة">
+<input id="price" placeholder="السعر">
+
+<button onclick="update()">تحديث</button>
+</div>
+
+<div id="qr"></div>
+
+<script>
+const password = "123456";
+
+async function add() {
+  const res = await fetch("/api/add", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "password": password
+    },
+    body: JSON.stringify({
+      customerName: name.value,
+      phone: phone.value,
+      device: device.value,
+      issue: issue.value
+    })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("qr").innerHTML = `
+    <p>الرابط:</p>
+    <a href="${data.link}" target="_blank">${data.link}</a>
+    <br><img src="${data.qr}" width="150">
+  `;
+}
+
+async function update() {
+  await fetch(`/api/update/${tid.value}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "password": password
+    },
+    body: JSON.stringify({
+      status: status.value,
+      price: price.value
+    })
+  });
+
+  alert("تم التحديث");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>تتبع</title>
+</head>
+<body>
+
+<h2>📱 تتبع جهازك</h2>
+
+<div class="box">
+<input id="id" placeholder="رقم التتبع">
+<button onclick="track()">بحث</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get("id")) {
+  document.getElementById("id").value = urlParams.get("id");
+  track();
+}
+
+async function track() {
+  const id = document.getElementById("id").value;
+  const res = await fetch(`/api/track/${id}`);
+  const data = await res.json();
+
+  document.getElementById("result").innerHTML = `
+    <div class="box">
+      <p>📱 ${data.device}</p>
+      <p>🔧 ${data.issue}</p>
+      <p class="status">📊 ${data.status}</p>
+      <p>💰 ${data.price || "-"} ₪</p>
+
+      <a target="_blank" href="https://wa.me/${data.phone}">
+        <button>💬 واتساب</button>
+      </a>
+    </div>
+  `;
+}
+</script>
+
+</body>
+</html>
