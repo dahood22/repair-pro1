@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import QRCode from "qrcode";
+import path from "path";
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ app.use(express.static("public"));
 mongoose.connect(process.env.MONGO_URI);
 
 // Schema
-const Repair = mongoose.model("Repair", {
+const repairSchema = new mongoose.Schema({
   trackingId: String,
   customerName: String,
   phone: String,
@@ -25,34 +25,31 @@ const Repair = mongoose.model("Repair", {
   createdAt: { type: Date, default: Date.now }
 });
 
-// إضافة جهاز
+const Repair = mongoose.model("Repair", repairSchema);
+
+// 🔹 إضافة جهاز
 app.post("/api/add", async (req, res) => {
   if (req.headers.password !== process.env.ADMIN_PASSWORD)
     return res.sendStatus(403);
 
   const trackingId = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-  const repair = new Repair({
-    ...req.body,
-    trackingId,
-    status: "تم الاستلام"
-  });
-
+  const repair = new Repair({ ...req.body, trackingId, status: "تم الاستلام" });
   await repair.save();
 
-  const link = `${process.env.BASE_URL}/track.html?id=${trackingId}`;
-  const qr = await QRCode.toDataURL(link);
-
-  res.json({ trackingId, link, qr });
+  res.json({
+    trackingId,
+    link: `${process.env.BASE_URL}/track.html?id=${trackingId}`
+  });
 });
 
-// تتبع
+// 🔹 تتبع
 app.get("/api/track/:id", async (req, res) => {
   const repair = await Repair.findOne({ trackingId: req.params.id });
   res.json(repair);
 });
 
-// تحديث
+// 🔹 تحديث الحالة
 app.put("/api/update/:id", async (req, res) => {
   if (req.headers.password !== process.env.ADMIN_PASSWORD)
     return res.sendStatus(403);
@@ -62,7 +59,7 @@ app.put("/api/update/:id", async (req, res) => {
     req.body
   );
 
-  res.send("تم التحديث");
+  res.send("updated");
 });
 
-app.listen(process.env.PORT, () => console.log("🔥 Server Running"));
+app.listen(process.env.PORT, () => console.log("Server running"));
